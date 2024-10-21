@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>PdfForge.Avalonia</id>
+        <version>1.0.2</version>
+        <title>Avalonia control for rendering and displaying PDF files using PdfForge.</title>
+        <authors>Aleksey Morkovin</authors>
+        <owners>Aleksey Morkovin</owners>
+        <license type="file">license/LICENSE.txt</license>
+        <projectUrl>https://gitflic.ru/project/jackhammer/pdf-forge-net</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>This library provides a custom control for Avalonia UI to render and display PDF documents using the PdfForge library. It supports rendering PDF pages as images and allows scaling for flexible display. PdfForge.Avalonia is ideal for Avalonia-based applications that require direct PDF visualization or manipulation through PdfForge, offering efficient rasterization into memory or files.</description>
+        <releaseNotes>Initial release of PdfForge.Avalonia.</releaseNotes>
+        <copyright>Copyright 2024 Aleksey Morkovin</copyright>
+        <tags>pdf avalonia rendering native control display</tags>
+        <readme>docs\readme.md</readme>
+        <icon>images\128x128.png</icon>
+        <dependencies>
+            <dependency id="PdfForge" version="1.0.1" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="assets/128x128.png" target="images/" />
+        <file src="license/LICENSE.txt" target="license/"/>
+        <file src="docs/readme.md" target="docs/"/>
+
+        <file src="bin/Release/net8.0/PdfForge.Avalonia.dll" target="lib/net8.0/" />
+        <file src="bin/Release/net8.0/PdfForge.Avalonia.pdb" target="lib/net8.0/" />
+    </files>
+</package>

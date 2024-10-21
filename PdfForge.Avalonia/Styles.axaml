@@ -1,0 +1,29 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:PdfForge.Avalonia"
+        mc:Ignorable="d">
+    
+    <Style Selector="local|PdfView">
+        <Setter Property="Background" Value="{TemplateBinding Background}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <ScrollViewer Name="PART_ScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <Image Name="PART_RenderImage" 
+                               Stretch="None" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"
+                               Width="{Binding ImageWidth}" 
+                               Height="{Binding ImageHeight}" />
+                    </ScrollViewer>
+                    
+                    <ContentControl Name="PART_LoadingIndicator" IsVisible="False">
+                        <ProgressBar IsIndeterminate="True" VerticalAlignment="Center" HorizontalAlignment="Center" Width="100" />
+                    </ContentControl>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

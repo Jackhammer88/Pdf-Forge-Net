@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>PdfForge</id>
+        <version>1.0.2</version>
+        <title>A library for rendering PDF files to PNG images.</title>
+        <authors>Aleksey Morkovin</authors>
+        <owners>Aleksey Morkovin</owners>
+        <license type="file">license\LICENSE.txt</license>
+        <projectUrl>https://gitflic.ru/project/jackhammer/pdf-forge</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>A library for rendering PDF documents into PNG files or memory. It supports image scaling, allowing
+            flexible control over the quality and size of the output images. Ideal for applications that require
+            converting PDFs into raster images for further processing or display.
+        </description>
+        <releaseNotes/>
+        <copyright>Copyright 2024 Aleksey Morkovin</copyright>
+        <tags>pdf native rendering png memory</tags>
+        <readme>docs\readme.md</readme>
+        <icon>images\128x128.png</icon>
+    </metadata>
+    <files>
+        <file src="license/LICENSE.txt" target="license\"/>
+        <file src="docs/readme.md" target="docs\"/>
+        <file src="assets/128x128.png" target="images\" />
+
+        <file src="bin/Release/net8.0/PdfForge.dll" target="lib/net8.0/"/>
+        <file src="bin/Release/net8.0/PdfForge.pdb" target="lib/net8.0/"/>
+
+        <!-- Native library for Windows -->
+        <!-- <file src="runtimes/win-x64/native/libpdf_forge.dll" target="runtimes/win-x64/native/" /> -->
+
+        <!-- Native library for Linux -->
+        <file src="runtimes/linux-x64/native/libpdf_forge.so" target="runtimes/linux-x64/native/"/>
+        <file src="runtimes/linux-x64/native/libcairo.so.2" target="runtimes/linux-x64/native/"/>
+        <file src="runtimes/linux-x64/native/libglib-2.0.so.0" target="runtimes/linux-x64/native/"/>
+        <file src="runtimes/linux-x64/native/libgobject-2.0.so.0" target="runtimes/linux-x64/native/"/>
+        <file src="runtimes/linux-x64/native/libpoppler-glib.so.8" target="runtimes/linux-x64/native/"/>
+
+    </files>
+</package>

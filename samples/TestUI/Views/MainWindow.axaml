@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TestUI.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avalonia="clr-namespace:PdfForge.Avalonia;assembly=PdfForge.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="680" Height="1000"
+        x:Class="TestUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/32x32.ico"
+        Title="PdfForge"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*,Auto,Auto,Auto">
+        <Grid.Styles>
+            <Style Selector="Button">
+                <Setter Property="Width" Value="50" />
+                <Setter Property="Height" Value="50" />
+                <Setter Property="Margin" Value="5" />
+                <Setter Property="FontSize" Value="20" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="HorizontalContentAlignment" Value="Center" />
+            </Style>
+        </Grid.Styles>
+        <avalonia:PdfView
+            Document="{Binding PdfDocument}"
+            Scale="{Binding RealScale}"
+            PageNumber="{Binding PageNumber}" />
+
+        <DockPanel Grid.Row="1" Width="200" Height="80">
+            <Button Content="↓" DockPanel.Dock="Left" Width="50" Command="{Binding DecreaseQualityCommand}" />
+            <Button Content="↑" DockPanel.Dock="Right" Width="50" Command="{Binding IncreaseQualityCommand}" />
+            <TextBox Text="{Binding Scale}" Height="50" VerticalContentAlignment="Center" IsReadOnly="True" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+        </DockPanel>
+        
+        <StackPanel Grid.Row="3" HorizontalAlignment="Center" Orientation="Horizontal">
+            <Button Content="&lt;-" Command="{Binding PrevPageCommand}" />
+            <Button Content="-&gt;" Command="{Binding NextPageCommand}" />
+        </StackPanel>
+    </Grid>
+
+</Window>
