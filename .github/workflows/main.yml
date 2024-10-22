@@ -3,58 +3,63 @@ name: Build and Package
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: ${{ matrix.target }}
+          target: x86_64-unknown-linux-gnu
+
+      # Установка .NET SDK для использования dotnet CLI
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.401'
 
       - name: Install Dependencies (Linux)
-        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential pkg-config libpoppler-glib-dev libcairo2-dev libglib2.0-dev
 
       - name: Build for Linux
-        if: runner.os == 'Linux'
         run: |
+          cd PdfForge.Rust
           rustup target add x86_64-unknown-linux-gnu
           export RUSTFLAGS="-L /usr/lib/x86_64-linux-gnu -lpoppler-glib -lcairo -lglib-2.0 -lgobject-2.0"
           cargo build --release --target=x86_64-unknown-linux-gnu
 
-      - name: Build for Windows
-        if: runner.os == 'Windows'
+      - name: Copy dependent .so libraries to NuGet folder
         run: |
-          rustup target add x86_64-pc-windows-gnu
-          export RUSTFLAGS="-L /usr/lib/x86_64-linux-gnu -lpoppler-glib -lcairo -lglib-2.0 -lgobject-2.0"
-          cargo build --release --target=x86_64-pc-windows-gnu
+          cd PdfForge.Rust/target/x86_64-unknown-linux-gnu
+          mkdir -p ../../PdfForge/runtimes/linux-x64/native
+          ldd release/libpdf_forge.so | grep "=> /" | awk '{print $3}' | grep -E "(poppler|cairo|glib|gobject|gio|jpeg|tiff|openjp2|lcms2|nss)" | xargs -I '{}' cp -v '{}' ../../PdfForge/runtimes/linux-x64/native/
+          
+          # Копируем также саму библиотеку
+          cp release/libpdf_forge.so ../../PdfForge/runtimes/linux-x64/native/
 
-      - name: Upload build artifacts for Linux
-        if: runner.os == 'Linux'
+      - name: Pack the NuGet package
+        run: |
+          cd PdfForge
+          dotnet build -c Release
+          dotnet pack --runtime linux-x64 --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.nuspec
+          
+
+      - name: Upload NuGet package
         uses: actions/upload-artifact@v3
         with:
-          name: linux-binaries
-          path: target/x86_64-unknown-linux-gnu/release/
-
-      - name: Upload build artifacts for Windows
-        if: runner.os == 'Windows'
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows-binaries
-          path: target/x86_64-pc-windows-gnu/release/
+          name: PdfForge-nuget-package
+          path: PdfForge/nupkgs/*.nupkg
