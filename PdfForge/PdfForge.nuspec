@@ -27,15 +27,6 @@
         <file src="bin/Release/net8.0/PdfForge.dll" target="lib/net8.0/"/>
         <file src="bin/Release/net8.0/PdfForge.pdb" target="lib/net8.0/"/>
 
-        <!-- Native library for Windows -->
-        <!-- <file src="runtimes/win-x64/native/libpdf_forge.dll" target="runtimes/win-x64/native/" /> -->
-
-        <!-- Native library for Linux -->
-        <file src="runtimes/linux-x64/native/libpdf_forge.so" target="runtimes/linux-x64/native/"/>
-        <file src="runtimes/linux-x64/native/libcairo.so.2" target="runtimes/linux-x64/native/"/>
-        <file src="runtimes/linux-x64/native/libglib-2.0.so.0" target="runtimes/linux-x64/native/"/>
-        <file src="runtimes/linux-x64/native/libgobject-2.0.so.0" target="runtimes/linux-x64/native/"/>
-        <file src="runtimes/linux-x64/native/libpoppler-glib.so.8" target="runtimes/linux-x64/native/"/>
 
     </files>
 </package>

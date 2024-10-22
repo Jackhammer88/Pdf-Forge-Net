@@ -47,14 +47,16 @@ jobs:
           cd PdfForge.Rust/target/x86_64-unknown-linux-gnu
           mkdir -p ../../PdfForge/runtimes/linux-x64/native
           ldd release/libpdf_forge.so | grep "=> /" | awk '{print $3}' | grep -E "(poppler|cairo|glib|gobject|gio|jpeg|tiff|openjp2|lcms2|nss)" | xargs -I '{}' cp -v '{}' ../../PdfForge/runtimes/linux-x64/native/
-          
-          # Копируем также саму библиотеку
           cp release/libpdf_forge.so ../../PdfForge/runtimes/linux-x64/native/
+      
+      - name: Add .so to nuspec
+        run: |
+          cd PdfForge
+          ./gen_nuspec.sh
 
       - name: Pack the NuGet package
         run: |
           cd PdfForge
-          dotnet build -c Release
           dotnet pack --runtime linux-x64 --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.nuspec
           
 
