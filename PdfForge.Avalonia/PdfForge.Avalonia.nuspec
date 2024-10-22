@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>PdfForge.Avalonia</id>
-        <version>1.0.5</version>
+        <version>1.0.6</version>
         <title>Avalonia control for rendering and displaying PDF files using PdfForge.</title>
         <authors>Aleksey Morkovin</authors>
         <owners>Aleksey Morkovin</owners>
