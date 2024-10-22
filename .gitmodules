@@ -1,0 +1,3 @@
+[submodule "PdfForge.Rust"]
+	path = PdfForge.Rust
+	url = https://github.com/Jackhammer88/Pdf-Forge.git
