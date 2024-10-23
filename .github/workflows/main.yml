@@ -24,7 +24,6 @@ jobs:
           toolchain: stable
           target: x86_64-unknown-linux-gnu
 
-      # Установка .NET SDK для использования dotnet CLI
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v3
         with:
@@ -44,10 +43,10 @@ jobs:
 
       - name: Copy .so libs and Pack the NuGet package
         run: |
-          mkdir -p PdfForge/runtimes/linux-x64/native
+          mkdir -p PdfForge/libs
           cd PdfForge.Rust/target/x86_64-unknown-linux-gnu
-          ldd release/libpdf_forge.so | grep "=> /" | awk '{print $3}' | grep -E "(poppler|cairo|glib|gobject|gio|jpeg|tiff|openjp2|lcms2|nss)" | xargs -I '{}' cp -v '{}' ../../../PdfForge/runtimes/linux-x64/native/
-          cp release/libpdf_forge.so ../../../PdfForge/runtimes/linux-x64/native/
+          ldd release/libpdf_forge.so | grep "=> /" | awk '{print $3}' | grep -E "(poppler|cairo|glib|gobject|gio|jpeg|tiff|openjp2|lcms2|nss)" | xargs -I '{}' cp -v '{}' ../../../PdfForge/libs/
+          cp release/libpdf_forge.so ../../../PdfForge/libs/
 
       - name: Pack PdfForge NuGet package
         run: |

@@ -5,9 +5,9 @@ namespace PdfForge;
 public class PdfForgeWrapper
 {
 #if OS_LINUX
-    private const string DllName = "runtimes/linux-x64/native/libpdf_forge.so";
+    private const string DllName = "libpdf_forge.so";
 #elif OS_WINDOWS
-    private const string DllName = "runtimes/win-x64/native/libpdf_forge.dll";
+    private const string DllName = "libpdf_forge.dll";
 #else
 #endif
 
