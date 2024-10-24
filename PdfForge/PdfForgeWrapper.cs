@@ -13,7 +13,7 @@ public class PdfForgeWrapper
         public UIntPtr size;
     }
 
-    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern IntPtr document_new(string filename);
 
 
@@ -23,7 +23,7 @@ public class PdfForgeWrapper
     [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
     public static extern IntPtr document_get_page(IntPtr documentWrapper, int pageNumber);
 
-    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl)]
+    [DllImport(DllName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
     public static extern int page_save_as_png(IntPtr pageWrapper, string filename, double scale);
 
 

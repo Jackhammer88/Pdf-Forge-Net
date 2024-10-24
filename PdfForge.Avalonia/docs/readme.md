@@ -20,6 +20,14 @@ Install the **PdfForge.Avalonia** package via NuGet:
 dotnet add package PdfForge.Avalonia
 ```
 
+You also need to add styles in your app:
+```xml
+<Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://PdfForge.Avalonia/Styles.axaml"/>
+</Application.Styles>
+```
+
 # Usage
 ## XAML Example
 

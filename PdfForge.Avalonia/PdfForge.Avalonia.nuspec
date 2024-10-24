@@ -2,7 +2,7 @@
 <package >
     <metadata>
         <id>PdfForge.Avalonia</id>
-        <version>1.0.10</version>
+        <version>1.1.2</version>
         <title>Avalonia control for rendering and displaying PDF files using PdfForge.</title>
         <authors>Aleksey Morkovin</authors>
         <owners>Aleksey Morkovin</owners>
@@ -16,7 +16,10 @@
         <readme>docs\readme.md</readme>
         <icon>images\128x128.png</icon>
         <dependencies>
-            <dependency id="PdfForge" version="1.0.9" />
+            <group targetFramework="net8.0">
+                <dependency id="PdfForge" version="1.1.1" />
+                <dependency id="Avalonia" version="11.1.4" />
+            </group>
         </dependencies>
     </metadata>
     <files>

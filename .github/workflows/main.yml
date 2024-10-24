@@ -9,12 +9,12 @@ on:
       - master
 
 jobs:
-  build-linux:
+  build-linux-natives:
     runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -48,35 +48,18 @@ jobs:
           ldd release/libpdf_forge.so | grep "=> /" | awk '{print $3}' | grep -E "(poppler|cairo|glib|gobject|gio|jpeg|tiff|openjp2|lcms2|nss)" | xargs -I '{}' cp -v '{}' ../../../PdfForge/libs/
           cp release/libpdf_forge.so ../../../PdfForge/libs/
 
-      - name: Pack PdfForge NuGet package
-        run: |
-          cd PdfForge
-          dotnet pack --runtime linux-x64 --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.nuspec
-      
-      - name: Pack PdfForge.Avalonia NuGet package
-        run: |
-          cd PdfForge.Avalonia
-          dotnet pack --runtime linux-x64 --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.Avalonia.nuspec
-
-      - name: Upload NuGet package
+      - name: Upload Linux Libraries
         uses: actions/upload-artifact@v3
         with:
-          name: PdfForge-nuget-packages
-          path: '**/nupkgs/*.nupkg'
+          name: linux-libs
+          path: PdfForge/libs
 
-      # - name: Publish PdfForge to NuGet.org
-      #   run: |
-      #     dotnet nuget push PdfForge/nupkgs/PdfForge.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-
-      # - name: Publish PdfForge.Avalonia to NuGet.org
-      #   run: |
-      #     dotnet nuget push PdfForge.Avalonia/nupkgs/PdfForge.Avalonia.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-  build-windows:
+      
+  build-windows-natives:
     runs-on: windows-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -92,47 +75,49 @@ jobs:
         with:
           update: true
           install: >
+            mingw-w64-x86_64-rust
             mingw-w64-x86_64-toolchain
             mingw-w64-x86_64-cairo
             mingw-w64-x86_64-poppler
             mingw-w64-x86_64-glib2
             mingw-w64-x86_64-gobject-introspection
+            mingw-w64-x86_64-pkg-config
 
       - name: Add MSYS2 to PATH
         run: |
           echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
-      - name: Build for Windows
+      - name: Set RUSTFLAGS Using pkg-config and Build for Windows
+        shell: msys2 {0}
         run: |
+          export RUSTFLAGS="-L/mingw64/lib $(pkg-config --libs cairo poppler-glib gobject-2.0 glib-2.0)"
           cd PdfForge.Rust
           cargo build --release --target=x86_64-pc-windows-gnu
 
-      - name: Set RUSTFLAGS for Windows
-        run: |
-          echo "C:\ ls"
-          dir C:\
-          echo "C:\msys64 ls"
-          dir C:\msys64
-          export RUSTFLAGS="-L C:/msys64/mingw64/lib -lpoppler-glib -lcairo -lglib-2.0 -lgobject-2.0"
-          echo "RUSTFLAGS=${RUSTFLAGS}" >> $GITHUB_ENV
-
       - name: Copy Windows Libraries
+        shell: msys2 {0}
         run: |
-          mkdir -p PdfForge/libs/windows
-          cd PdfForge.Rust/target/x86_64-pc-windows-gnu/release
-          cp *.dll ../../../../PdfForge/libs/windows/
+          mkdir -p PdfForge/libs
+          cp PdfForge.Rust/target/x86_64-pc-windows-gnu/release/pdf_forge.dll PdfForge/libs/
+          cd PdfForge/libs
+          ldd ./pdf_forge.dll | grep "=>" | awk '{print $3}' | grep -v "Windows" | xargs -I '{}' cp '{}' ./
 
       - name: Upload Windows Libraries
         uses: actions/upload-artifact@v3
         with:
           name: windows-libs
-          path: PdfForge/libs/windows
+          path: PdfForge/libs
 
-  combine-and-package:
-    needs: [build-linux, build-windows]
+  combine-and-publish:
+    needs: [build-linux-natives, build-windows-natives]
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
       - name: Download Linux Libraries
         uses: actions/download-artifact@v3
         with:
@@ -145,29 +130,37 @@ jobs:
           name: windows-libs
           path: combined/libs/windows
 
-      - name: Combine Linux and Windows Libraries
-        run: |
-          mkdir -p combined/libs
-          mv combined/libs/linux/* combined/libs/
-          mv combined/libs/windows/* combined/libs/
-
       - name: Copy Libraries to NuGet Package Directory
         run: |
           mkdir -p PdfForge/libs
-          cp -r combined/libs/* PdfForge/libs/
-          ls PdfForge/libs/
+          mv combined/libs/linux/* PdfForge/libs/
+          mv combined/libs/windows/* PdfForge/libs/
 
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.401'
 
-      # - name: Pack Combined PdfForge NuGet package
-      #   run: |
-      #     cd PdfForge
-      #     dotnet pack --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.nuspec
+      - name: Pack Combined PdfForge NuGet package
+        run: |
+          cd PdfForge
+          dotnet pack --configuration Release --output ../nupkgs -p:NuspecFile=./PdfForge.nuspec
 
-      # - name: Pack PdfForge.Avalonia NuGet package
-      #   run: |
-      #     cd PdfForge.Avalonia
-      #     dotnet pack --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.Avalonia.nuspec
+      - name: Pack PdfForge.Avalonia NuGet package
+        run: |
+          cd PdfForge.Avalonia
+          dotnet pack --configuration Release --output ../nupkgs -p:NuspecFile=./PdfForge.Avalonia.nuspec
+      
+      - name: Upload Nuget Packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget-packages
+          path: nupkgs/
+
+      - name: Publish PdfForge to NuGet.org
+        run: |
+          dotnet nuget push ./nupkgs/PdfForge.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+      - name: Publish PdfForge.Avalonia to NuGet.org
+        run: |
+          dotnet nuget push ./nupkgs/PdfForge.Avalonia.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
