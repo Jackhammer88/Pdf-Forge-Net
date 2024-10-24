@@ -87,4 +87,4 @@ Here’s an example that demonstrates how to integrate PdfView with buttons for 
 - **PdfForge** library for PDF rendering.
 
 # License
-This project is licensed under the Apache v2.0 license.
+This project is licensed under the GPL-3.0 license.

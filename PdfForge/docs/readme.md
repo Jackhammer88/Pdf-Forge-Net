@@ -61,4 +61,4 @@ using var pdfDocument = new PdfForgeDocument("sample.pdf");
 - .NET 8.0 or later.
 
 # License
-This project is licensed under the Apache v2.0 license.
+This project is licensed under the GPL-3.0 license.
