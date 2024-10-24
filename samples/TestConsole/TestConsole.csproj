@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="PdfForge" Version="1.0.10" />
+      <ProjectReference Include="..\..\PdfForge\PdfForge.csproj" />
     </ItemGroup>
 
 </Project>

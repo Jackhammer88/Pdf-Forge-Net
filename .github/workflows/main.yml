@@ -9,7 +9,7 @@ on:
       - master
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-20.04
 
     steps:
@@ -64,10 +64,100 @@ jobs:
           name: PdfForge-nuget-packages
           path: '**/nupkgs/*.nupkg'
 
-      - name: Publish PdfForge to NuGet.org
-        run: |
-          dotnet nuget push PdfForge/nupkgs/PdfForge.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      # - name: Publish PdfForge to NuGet.org
+      #   run: |
+      #     dotnet nuget push PdfForge/nupkgs/PdfForge.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
 
-      - name: Publish PdfForge.Avalonia to NuGet.org
+      # - name: Publish PdfForge.Avalonia to NuGet.org
+      #   run: |
+      #     dotnet nuget push PdfForge.Avalonia/nupkgs/PdfForge.Avalonia.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-pc-windows-gnu
+          override: true
+
+      - name: Install MSYS2 and Dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cairo
+            mingw-w64-x86_64-poppler
+            mingw-w64-x86_64-glib2
+            mingw-w64-x86_64-gobject-introspection
+
+      - name: Add MSYS2 to PATH
+        run: echo "::add-path::C:/msys64/mingw64/bin"
+
+      - name: Build for Windows
         run: |
-          dotnet nuget push PdfForge.Avalonia/nupkgs/PdfForge.Avalonia.[0-9]*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+          cd PdfForge.Rust
+          cargo build --release --target=x86_64-pc-windows-gnu
+
+      - name: Copy Windows Libraries
+        run: |
+          mkdir -p PdfForge/libs/windows
+          cd PdfForge.Rust/target/x86_64-pc-windows-gnu/release
+          cp *.dll ../../../../PdfForge/libs/windows/
+
+      - name: Upload Windows Libraries
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-libs
+          path: PdfForge/libs/windows
+
+  combine-and-package:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Linux Libraries
+        uses: actions/download-artifact@v3
+        with:
+          name: linux-libs
+          path: combined/libs/linux
+
+      - name: Download Windows Libraries
+        uses: actions/download-artifact@v3
+        with:
+          name: windows-libs
+          path: combined/libs/windows
+
+      - name: Combine Linux and Windows Libraries
+        run: |
+          mkdir -p combined/libs
+          mv combined/libs/linux/* combined/libs/
+          mv combined/libs/windows/* combined/libs/
+
+      - name: Copy Libraries to NuGet Package Directory
+        run: |
+          mkdir -p PdfForge/libs
+          cp -r combined/libs/* PdfForge/libs/
+          ls PdfForge/libs/
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.401'
+
+      # - name: Pack Combined PdfForge NuGet package
+      #   run: |
+      #     cd PdfForge
+      #     dotnet pack --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.nuspec
+
+      # - name: Pack PdfForge.Avalonia NuGet package
+      #   run: |
+      #     cd PdfForge.Avalonia
+      #     dotnet pack --configuration Release --output ./nupkgs -p:NuspecFile=./PdfForge.Avalonia.nuspec
