@@ -27,6 +27,7 @@
         <file src="bin/Release/net8.0/PdfForge.dll" target="lib/net8.0/"/>
         <file src="bin/Release/net8.0/PdfForge.pdb" target="lib/net8.0/"/>
 
-        <file src="libs/*.so*" target="contentFiles/any/any/" />
+        <file src="libs/*.so*" target="runtimes/linux-x64/native/" />
+        <file src="libs/*.dll" target="runtimes/win-x64/native/" />
     </files>
 </package>
