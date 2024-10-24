@@ -107,6 +107,15 @@ jobs:
           cd PdfForge.Rust
           cargo build --release --target=x86_64-pc-windows-gnu
 
+      - name: Set RUSTFLAGS for Windows
+        run: |
+          echo "C:\ ls"
+          dir C:\
+          echo "C:\msys64 ls"
+          dir C:\msys64
+          export RUSTFLAGS="-L C:/msys64/mingw64/lib -lpoppler-glib -lcairo -lglib-2.0 -lgobject-2.0"
+          echo "RUSTFLAGS=${RUSTFLAGS}" >> $GITHUB_ENV
+
       - name: Copy Windows Libraries
         run: |
           mkdir -p PdfForge/libs/windows
