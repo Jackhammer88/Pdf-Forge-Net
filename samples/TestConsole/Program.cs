@@ -1,28 +1,20 @@
-﻿
-using PdfForge;
+﻿using PdfForge;
 
-using PdfForgeDocument document = new("test.pdf");
+namespace TestConsole;
 
-string outputDir = "pages";
-
-if (Directory.Exists(outputDir))
+public static class Program
 {
-    Directory.Delete(outputDir, true);
+    public static void Main(string[] args)
+    {
+        using var document = new PdfForgeDocument("test.pdf");
+
+        for (int j = 0; j < 1; j++)
+        {
+            for (int i = 0; i < document.TotalPages; i++)
+            {
+                var bytes = document.GetPageBytes(i);
+                _ = bytes.Length;
+            }
+        }
+    }
 }
-
-Directory.CreateDirectory(outputDir);
-
-for (int i = 0; i < document.TotalPages; i++)
-{
-    document.SavePageToPngFile(i, Path.Combine(outputDir, $"page-{i+1}.png"));
-}
-
-for (int i = 0; i < document.TotalPages; i++)
-{
-    string filename = Path.Combine(outputDir, $"page-from-bytes-{i + 1}.png");
-    byte[] bytes = document.GetPageBytes(i);
-
-    File.WriteAllBytes(filename, bytes);
-}
-
-Console.WriteLine("Done");

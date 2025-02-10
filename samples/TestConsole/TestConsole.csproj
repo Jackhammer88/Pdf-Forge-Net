@@ -6,9 +6,17 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <PublishAot>true</PublishAot>
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>  <!-- Для Linux -->
+        <SelfContained>true</SelfContained>               <!-- Для полной автономности -->
+        <StripSymbols>true</StripSymbols>                 <!-- Уменьшение размера -->
+        <InvariantGlobalization>true</InvariantGlobalization> <!-- Ускорение работы с текстом -->
     </PropertyGroup>
 
     <ItemGroup>
+      <None Update="test.pdf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="test.pdf">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

@@ -1,12 +1,11 @@
-using System.Runtime.InteropServices;
-using static PdfForge.PdfForgeWrapper;
+using PdfForge.Interop;
 
 namespace PdfForge;
 
 public class PdfForgeDocument : IDisposable
 {
-    private readonly IntPtr _doc;
-    private readonly int _totalPages;
+    private readonly object _lock = new();
+    private readonly Poppler.PopplerDocumentHandle _doc;
 
     public PdfForgeDocument(string filename)
     {
@@ -16,77 +15,44 @@ public class PdfForgeDocument : IDisposable
         // Преобразуем путь в формат URL
         string fileUrl = ConvertPathToFileUrl(filename);
 
-        _doc = document_new(fileUrl);
-        if (_doc == IntPtr.Zero)
+        _doc = Poppler.poppler_document_new_from_file(fileUrl, "", out _);
+        if (_doc.IsInvalid)
         {
             throw new InvalidOperationException("Error: Could not open document.");
         }
 
-        _totalPages = document_total_pages(_doc);
+        TotalPages = _doc.TotalPages;
     }
+    
+    public int TotalPages { get; }
     
     private static string ConvertPathToFileUrl(string path) => $"file:///{Path.GetFullPath(path).Replace("\\", "/")}";
 
-
     public void SavePageToPngFile(int pageNumber, string filename, double scale = 1.0)
     {
-        // Получаем первую страницу и сохраняем ее как PNG
-        IntPtr pagePtr = document_get_page(_doc, pageNumber);
-
-        if (pagePtr == IntPtr.Zero)
+        lock (_lock)
         {
-            throw new InvalidOperationException("Error: Could not get page.");
-        }
-
-        int resultCode = page_save_as_png(pagePtr, filename, scale);
-
-        if (resultCode != 0)
-        {
-            throw new InvalidOperationException("Error: Could not save page.");
+            using var page = _doc.GetPage(pageNumber);
+            if (page.IsInvalid)
+            {
+                throw new InvalidOperationException("Error: Could not get page.");
+            }
+        
+            page.ToPngFile(filename, scale);
         }
     }
 
-    public byte[] GetPageBytes(int pageNumber, double scale = 1.0)
+    public Memory<byte> GetPageBytes(int pageNumber, double scale = 1.0)
     {
-        IntPtr pagePtr = document_get_page(_doc, pageNumber);
-
-        if (pagePtr == IntPtr.Zero)
+        lock (_lock)
         {
-            throw new InvalidOperationException("Error: Could not get page.");
-        }
-
-        IntPtr bufferPtr = page_to_png_bytes(pagePtr, scale);
-        if (bufferPtr == IntPtr.Zero)
-        {
-            throw new InvalidOperationException("Failed to convert page to PNG.");
-        }
-
-        try
-        {
-            ByteBuffer buffer = Marshal.PtrToStructure<ByteBuffer>(bufferPtr);
-
-            ulong size = buffer.size.ToUInt64();
-
-            if (buffer.data == IntPtr.Zero || size == 0)
+            using var page = _doc.GetPage(pageNumber);
+            if (page.IsInvalid)
             {
-                throw new InvalidOperationException("Data buffer is empty");
+                throw new InvalidOperationException("Error: Could not get page.");
             }
-
-            byte[] data = new byte[size];
-            Marshal.Copy(buffer.data, data, 0, (int)size);
-
-            return data;
-        }
-        finally
-        {
-            if (pagePtr != IntPtr.Zero)
-            {
-                page_free(pagePtr);
-            }
-            if (bufferPtr != IntPtr.Zero)
-            {
-                free_byte_buffer(bufferPtr);
-            }
+        
+            return page.GetPngBytes(scale);
         }
     }
 
@@ -94,13 +60,14 @@ public class PdfForgeDocument : IDisposable
     {
         try
         {
-            document_free(_doc);
+            if (!_doc.IsClosed)
+            {
+                _doc.Dispose();
+            }
         }
         catch (Exception e)
         {
             Console.Error.WriteLine(e);
         }
     }
-
-    public int TotalPages => _totalPages;
 }

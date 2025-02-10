@@ -158,7 +158,7 @@ public class PdfView : ContentControl
             if (Dispatcher.UIThread.CheckAccess())
             {
                 var pageBytes = Document.GetPageBytes(PageNumber, Scale);
-                using MemoryStream stream = new (pageBytes);
+                using MemoryStream stream = new (pageBytes.ToArray());
                 Bitmap bitmap = new (stream);
                     
                 ImageWidth = bitmap.PixelSize.Width;
@@ -170,7 +170,7 @@ public class PdfView : ContentControl
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     var pageBytes = Document.GetPageBytes(PageNumber, Scale);
-                    using MemoryStream stream = new (pageBytes);
+                    using MemoryStream stream = new (pageBytes.ToArray());
                     Bitmap bitmap = new (stream);
                         
                     ImageWidth = bitmap.PixelSize.Width;
