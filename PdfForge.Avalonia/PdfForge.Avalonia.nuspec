@@ -2,22 +2,31 @@
 <package >
     <metadata>
         <id>PdfForge.Avalonia</id>
-        <version>1.1.4</version>
+        <version>2.1.2</version>
         <title>Avalonia control for rendering and displaying PDF files using PdfForge.</title>
         <authors>Aleksey Morkovin</authors>
         <owners>Aleksey Morkovin</owners>
         <license type="file">license/LICENSE.txt</license>
         <projectUrl>https://gitflic.ru/project/jackhammer/pdf-forge-net</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>This library provides a custom control for Avalonia UI to render and display PDF documents using the PdfForge library. It supports rendering PDF pages as images and allows scaling for flexible display. PdfForge.Avalonia is ideal for Avalonia-based applications that require direct PDF visualization or manipulation through PdfForge, offering efficient rasterization into memory or files.</description>
+        <description>
+            A .NET library for rendering PDF documents into PNG files or memory buffers on GNU/Linux.
+            This library requires the following system packages to be installed:
+            - libpoppler-glib-dev
+            - libcairo2-dev
+            - libglib2.0-dev
+            (Package names may vary depending on the distribution.)
+
+            This library provides a custom control for Avalonia UI to render and display PDF documents using the PdfForge library. It supports rendering PDF pages as images and allows scaling for flexible display. PdfForge.Avalonia is ideal for Avalonia-based applications that require direct PDF visualization or manipulation through PdfForge, offering efficient rasterization into memory or files.
+        </description>
         <releaseNotes>Initial release of PdfForge.Avalonia.</releaseNotes>
-        <copyright>Copyright 2024 Aleksey Morkovin</copyright>
+        <copyright>Copyright 2025 Aleksey Morkovin</copyright>
         <tags>pdf avalonia rendering native control display</tags>
         <readme>docs\readme.md</readme>
         <icon>images\128x128.png</icon>
         <dependencies>
             <group targetFramework="net8.0">
-                <dependency id="PdfForge" version="1.1.4" />
+                <dependency id="PdfForge" version="2.1.2" />
                 <dependency id="Avalonia" version="11.1.4" />
             </group>
         </dependencies>
