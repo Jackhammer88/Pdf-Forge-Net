@@ -1,4 +1,7 @@
+using System.Runtime.Versioning;
 using PdfForge.Interop;
+
+[assembly: SupportedOSPlatform("linux")]
 
 namespace PdfForge;
 

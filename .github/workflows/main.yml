@@ -4,12 +4,13 @@ on:
   push:
     branches:
       - master
+
   pull_request:
     branches:
       - master
 
 jobs:
-  build-linux-natives:
+  build-linux:
     runs-on: ubuntu-20.04
 
     steps:
@@ -18,130 +19,12 @@ jobs:
         with:
           submodules: true
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: x86_64-unknown-linux-gnu
-
       - name: Set up .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.401'
+          dotnet-version: '8.0.406'
 
-      - name: Install Dependencies (Linux)
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config libpoppler-glib-dev libcairo2-dev libglib2.0-dev
-
-      - name: Build for Linux
-        run: |
-          cd PdfForge.Rust
-          rustup target add x86_64-unknown-linux-gnu
-          export RUSTFLAGS="-L /usr/lib/x86_64-linux-gnu -lpoppler-glib -lcairo -lglib-2.0 -lgobject-2.0"
-          cargo build --release --target=x86_64-unknown-linux-gnu
-
-      - name: Copy .so libs and Pack the NuGet package
-        run: |
-          mkdir -p PdfForge/libs
-          cd PdfForge.Rust/target/x86_64-unknown-linux-gnu
-          ldd release/libpdf_forge.so | grep "=> /" | awk '{print $3}' | grep -E "(poppler|cairo|glib|gobject|gio|jpeg|tiff|openjp2|lcms2|nss)" | xargs -I '{}' cp -v '{}' ../../../PdfForge/libs/
-          cp release/libpdf_forge.so ../../../PdfForge/libs/
-
-      - name: Upload Linux Libraries
-        uses: actions/upload-artifact@v3
-        with:
-          name: linux-libs
-          path: PdfForge/libs
-
-      
-  build-windows-natives:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: x86_64-pc-windows-gnu
-          override: true
-
-      - name: Install MSYS2 and Dependencies
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: >
-            mingw-w64-x86_64-rust
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-cairo
-            mingw-w64-x86_64-poppler
-            mingw-w64-x86_64-glib2
-            mingw-w64-x86_64-gobject-introspection
-            mingw-w64-x86_64-pkg-config
-
-      - name: Add MSYS2 to PATH
-        run: |
-          echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
-
-      - name: Set RUSTFLAGS Using pkg-config and Build for Windows
-        shell: msys2 {0}
-        run: |
-          export RUSTFLAGS="-L/mingw64/lib $(pkg-config --libs cairo poppler-glib gobject-2.0 glib-2.0)"
-          cd PdfForge.Rust
-          cargo build --release --target=x86_64-pc-windows-gnu
-
-      - name: Copy Windows Libraries
-        shell: msys2 {0}
-        run: |
-          mkdir -p PdfForge/libs
-          cp PdfForge.Rust/target/x86_64-pc-windows-gnu/release/pdf_forge.dll PdfForge/libs/
-          cd PdfForge/libs
-          ldd ./pdf_forge.dll | grep "=>" | awk '{print $3}' | grep -v "Windows" | xargs -I '{}' cp '{}' ./
-
-      - name: Upload Windows Libraries
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows-libs
-          path: PdfForge/libs
-
-  combine-and-publish:
-    needs: [build-linux-natives, build-windows-natives]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-
-      - name: Download Linux Libraries
-        uses: actions/download-artifact@v3
-        with:
-          name: linux-libs
-          path: combined/libs/linux
-
-      - name: Download Windows Libraries
-        uses: actions/download-artifact@v3
-        with:
-          name: windows-libs
-          path: combined/libs/windows
-
-      - name: Copy Libraries to NuGet Package Directory
-        run: |
-          mkdir -p PdfForge/libs
-          mv combined/libs/linux/* PdfForge/libs/
-          mv combined/libs/windows/* PdfForge/libs/
-
-      - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.401'
-
-      - name: Pack Combined PdfForge NuGet package
+      - name: Pack PdfForge NuGet package
         run: |
           cd PdfForge
           dotnet pack --configuration Release --output ../nupkgs -p:NuspecFile=./PdfForge.nuspec
@@ -152,7 +35,7 @@ jobs:
           dotnet pack --configuration Release --output ../nupkgs -p:NuspecFile=./PdfForge.Avalonia.nuspec
       
       - name: Upload Nuget Packages
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nuget-packages
           path: nupkgs/

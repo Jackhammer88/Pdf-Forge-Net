@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root", "Root", "{6F7DFD60-E029-4CB9-9CF7-8D8A9E1C72A8}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		.github\workflows\main.yml = .github\workflows\main.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{8476DE52-18F1-419B-8C43-709431527FE1}"

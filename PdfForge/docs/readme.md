@@ -58,7 +58,18 @@ using var pdfDocument = new PdfForgeDocument("sample.pdf");
 ```
 
 # Requirements
-- .NET 8.0 or later.
+- **GNU/Linux OS**
+- **.NET 8.0**+
+- **Following system packages to be installed:**
+    - libpoppler-glib-dev
+    - libcairo2-dev
+    - libglib2.0-dev
+
+  _Package names may vary depending on the distribution._
+
+🚫 **Windows and macOS are NOT supported** due to dependencies on Linux-specific libraries (Poppler, Cairo, GLib).
+
+❗ This library relies on native **Poppler** and **Cairo** libraries, which are available only on Linux.
 
 # License
 This project is licensed under the GPL-3.0 license.

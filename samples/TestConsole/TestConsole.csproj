@@ -3,14 +3,14 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
+        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <PublishAot>true</PublishAot>
-        <RuntimeIdentifier>linux-x64</RuntimeIdentifier>  <!-- Для Linux -->
-        <SelfContained>true</SelfContained>               <!-- Для полной автономности -->
-        <StripSymbols>true</StripSymbols>                 <!-- Уменьшение размера -->
-        <InvariantGlobalization>true</InvariantGlobalization> <!-- Ускорение работы с текстом -->
+        <SelfContained>true</SelfContained>
+        <StripSymbols>true</StripSymbols>
+        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <ItemGroup>

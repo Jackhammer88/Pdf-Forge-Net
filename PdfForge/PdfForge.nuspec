@@ -2,20 +2,30 @@
 <package>
     <metadata>
         <id>PdfForge</id>
-        <version>1.1.4</version>
+        <version>2.1.1</version>
         <title>A library for rendering PDF files to PNG images.</title>
         <authors>Aleksey Morkovin</authors>
         <owners>Aleksey Morkovin</owners>
         <license type="file">license\LICENSE.txt</license>
-        <projectUrl>https://gitflic.ru/project/jackhammer/pdf-forge</projectUrl>
+        <projectUrl>https://github.com/Jackhammer88/Pdf-Forge-Net</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>A library for rendering PDF documents into PNG files or memory. It supports image scaling, allowing
-            flexible control over the quality and size of the output images. Ideal for applications that require
-            converting PDFs into raster images for further processing or display.
+        <description>
+            A .NET library for rendering PDF documents into PNG files or memory buffers on GNU/Linux.
+            This library requires the following system packages to be installed:
+            - libpoppler-glib-dev
+            - libcairo2-dev
+            - libglib2.0-dev
+
+            (Package names may vary depending on the distribution.)
+
+            Features:
+            - High-quality PDF to PNG conversion with scaling support
+            - Optimized for applications requiring PDF rasterization
+            - Suitable for document processing and display purposes
         </description>
         <releaseNotes/>
-        <copyright>Copyright 2024 Aleksey Morkovin</copyright>
-        <tags>pdf native rendering png memory</tags>
+        <copyright>Copyright 2025 Aleksey Morkovin</copyright>
+        <tags>pdf native rendering png memory linux</tags>
         <readme>docs\readme.md</readme>
         <icon>images\128x128.png</icon>
     </metadata>
@@ -24,10 +34,7 @@
         <file src="docs/readme.md" target="docs\"/>
         <file src="assets/128x128.png" target="images\" />
 
-        <file src="bin/Release/net8.0/PdfForge.dll" target="lib/net8.0/"/>
-        <file src="bin/Release/net8.0/PdfForge.pdb" target="lib/net8.0/"/>
-
-        <file src="libs/*.so*" target="runtimes/linux-x64/native/" />
-        <file src="libs/*.dll" target="runtimes/win-x64/native/" />
+        <file src="bin/Release/net8.0/linux-x64/PdfForge.dll" target="lib/net8.0/"/>
+        <file src="bin/Release/net8.0/linux-x64/PdfForge.pdb" target="lib/net8.0/"/>
     </files>
 </package>

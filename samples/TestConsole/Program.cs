@@ -1,20 +1,11 @@
-﻿using PdfForge;
+﻿using System.Runtime.Versioning;
+using PdfForge;
 
-namespace TestConsole;
+[assembly: SupportedOSPlatform("linux")]
 
-public static class Program
+using PdfForgeDocument document = new("test.pdf");
+
+for (int i = 0; i < document.TotalPages; i++)
 {
-    public static void Main(string[] args)
-    {
-        using var document = new PdfForgeDocument("test.pdf");
-
-        for (int j = 0; j < 1; j++)
-        {
-            for (int i = 0; i < document.TotalPages; i++)
-            {
-                var bytes = document.GetPageBytes(i);
-                _ = bytes.Length;
-            }
-        }
-    }
+    document.SavePageToPngFile(i, $"test{i + 1}.png");
 }
