@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Runtime.Versioning;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
@@ -8,6 +9,7 @@ using Avalonia.Threading;
 
 namespace PdfForge.Avalonia;
 
+[SupportedOSPlatform("linux")]
 public class PdfView : ContentControl
 {
     private Image? PART_Image;
@@ -158,7 +160,7 @@ public class PdfView : ContentControl
             if (Dispatcher.UIThread.CheckAccess())
             {
                 var pageBytes = Document.GetPageBytes(PageNumber, Scale);
-                using MemoryStream stream = new (pageBytes);
+                using MemoryStream stream = new (pageBytes.ToArray());
                 Bitmap bitmap = new (stream);
                     
                 ImageWidth = bitmap.PixelSize.Width;
@@ -170,7 +172,7 @@ public class PdfView : ContentControl
                 Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     var pageBytes = Document.GetPageBytes(PageNumber, Scale);
-                    using MemoryStream stream = new (pageBytes);
+                    using MemoryStream stream = new (pageBytes.ToArray());
                     Bitmap bitmap = new (stream);
                         
                     ImageWidth = bitmap.PixelSize.Width;

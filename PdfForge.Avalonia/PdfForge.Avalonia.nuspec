@@ -27,7 +27,7 @@
         <file src="license/LICENSE.txt" target="license/"/>
         <file src="docs/readme.md" target="docs/"/>
 
-        <file src="bin/Release/net8.0/PdfForge.Avalonia.dll" target="lib/net8.0/" />
-        <file src="bin/Release/net8.0/PdfForge.Avalonia.pdb" target="lib/net8.0/" />
+        <file src="bin/Release/net8.0/linux-x64/PdfForge.Avalonia.dll" target="lib/net8.0/" />
+        <file src="bin/Release/net8.0/linux-x64/PdfForge.Avalonia.pdb" target="lib/net8.0/" />
     </files>
 </package>

@@ -1,6 +1,8 @@
 ﻿using Avalonia;
-using System;
+using System;using System.Runtime.Versioning;
 using Avalonia.ReactiveUI;
+
+[assembly: SupportedOSPlatform("linux")]
 
 namespace TestUI;
 

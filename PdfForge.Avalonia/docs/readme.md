@@ -12,6 +12,7 @@
 - Show loading indicators during rendering.
 - Expose document dimensions for flexible UI layouts.
 
+
 ## Installation
 
 Install the **PdfForge.Avalonia** package via NuGet:
@@ -82,9 +83,18 @@ Here’s an example that demonstrates how to integrate PdfView with buttons for 
 - **Scale**: The scaling factor for the PDF page rendering.
 
 # Requirements
+- **GNU/Linux OS**
 - **.NET 8.0**+
 - **Avalonia UI** for building the user interface (11.1.4+).
 - **PdfForge** library for PDF rendering.
+- **Following system packages to be installed:**
+    - libpoppler-glib-dev
+    - libcairo2-dev
+    - libglib2.0-dev
+
+    _Package names may vary depending on the distribution._
+
+🚫 **Windows and macOS are NOT supported** due to dependencies on Linux-specific libraries (Poppler, Cairo, GLib).
 
 # License
 This project is licensed under the GPL-3.0 license.
